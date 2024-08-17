@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import * as wasm from 'wasm-lib';
 
-wasm.init();
 </script>
 
 <template>
-  <RouterView/>
+<h1>Exif</h1>
 </template>
 
 <style scoped>
