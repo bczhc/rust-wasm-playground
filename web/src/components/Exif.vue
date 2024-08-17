@@ -5,26 +5,26 @@ import {ref} from "vue";
 const Exif = useWasm().Exif;
 
 let gps = ref<Float64Array | null>();
+let fileInput = ref<HTMLElement>();
 
-window.onload = () => {
-  document.querySelector('input')!!.addEventListener('change', function () {
-
-    let reader = new FileReader();
-    reader.onload = function () {
-      gps.value = null;
-      try {
-        let arrayBuffer = this.result as ArrayBuffer;
-        let array = new Uint8Array(arrayBuffer);
-        let exif = Exif.read(array);
-        onRead(exif);
-      } catch (e) {
-        console.error(e);
-        alert(`${e}`);
-      }
+function inputOnChange() {
+  let reader = new FileReader();
+  reader.onload = function () {
+    gps.value = null;
+    try {
+      let arrayBuffer = this.result as ArrayBuffer;
+      let array = new Uint8Array(arrayBuffer);
+      let exif = Exif.read(array);
+      onRead(exif);
+    } catch (e) {
+      console.error(e);
+      alert(`${e}`);
     }
-    reader.readAsArrayBuffer(this.files!![0]);
-  }, false);
-};
+  }
+
+  let first = ((fileInput.value!! as any)['files'] as Blob[])[0];
+  reader.readAsArrayBuffer(first);
+}
 
 function onRead(addr: number) {
   gps.value = Exif.gps(addr);
@@ -35,7 +35,7 @@ function onRead(addr: number) {
 </script>
 
 <template>
-  <input type="file"/>
+  <input type="file" @change="inputOnChange" ref="fileInput"/>
 
   <p>
     <span v-if="gps">GPS: </span>
