@@ -10,6 +10,7 @@ use wasm_bindgen::prelude::*;
 mod utils;
 mod argon2;
 mod errors;
+mod exif;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -26,3 +27,5 @@ extern "C" {
 fn wasm_init() {
     utils::set_panic_hook();
 }
+
+pub type Result<T> = std::result::Result<T, String>;

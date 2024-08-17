@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import * as wasm from 'wasm-lib';
-
-wasm.init();
 </script>
 
 <template>
