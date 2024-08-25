@@ -24,6 +24,9 @@ getrandom = { version = "0.2.8", features = ["js"] }
 rand = "0.8.5"
 rexif = "0.7.4"
 anyhow = "1.0.86"
+hex = "0.4.3"
+hex-literal = "0.4.1"
+blake3 = "1.5.4"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

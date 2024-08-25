@@ -11,6 +11,10 @@ mod utils;
 mod argon2;
 mod errors;
 mod exif;
+mod ipv6;
+mod blake3;
+mod hex;
+mod utf8;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
