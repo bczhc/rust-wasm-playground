@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
-
+import {routes} from "../router.ts";
 let router = useRouter();
 </script>
 
 <template>
   <n-ul>
-    <n-li><n-a @click="router.push('/argon2')">Argon2</n-a></n-li>
-    <n-li><n-a @click="router.push('/exif')">Exif</n-a></n-li>
-    <n-li><n-a @click="router.push('/ipv6-xor')">Ipv6Xor</n-a></n-li>
+    <n-li v-for="r in routes.splice(1)">
+      <n-a @click="router.push(r.path)">{{
+          (() => {
+            let split = r.component['__file'].split('/');
+            let basename = split[split.length - 1];
+            let i = basename.lastIndexOf('.vue');
+            return basename.substring(0, i);
+          })()
+        }}</n-a>
+    </n-li>
   </n-ul>
 </template>
 
