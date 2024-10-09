@@ -8,7 +8,7 @@ const wasm = useWasm();
 let syntax = computed(() => {
   try {
     return wasm.RustParser.parse_file(code.value).syntax;
-  } catch (e) {
+  } catch (e: any) {
     return e.toString();
   }
 });
@@ -16,7 +16,7 @@ let syntax = computed(() => {
 let reassembled = computed(() => {
   try {
     return wasm.RustParser.parse_file(code.value).reassembled;
-  } catch (e) {
+  } catch (e: any) {
     return e.toString();
   }
 });
