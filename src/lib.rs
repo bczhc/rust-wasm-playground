@@ -1,4 +1,5 @@
 #![feature(try_blocks)]
+#![feature(isqrt)]
 
 use std::fmt::Debug;
 use std::str::FromStr;
@@ -17,6 +18,7 @@ mod hex;
 mod utf8;
 mod rust_parser;
 mod leg_cpu;
+mod kaprekar;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.

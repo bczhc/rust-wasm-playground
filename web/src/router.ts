@@ -5,6 +5,7 @@ import Home from "./components/Home.vue";
 import Ipv6Xor from "./components/Ipv6Xor.vue";
 import RustParser from "./components/RustParser.vue";
 import LegCpu from "./components/LegCpu.vue";
+import Kaprekar from "./components/Kaprekar.vue";
 
 export const routes = [
     {path: '/', component: Home, name: 'Home'},
@@ -13,6 +14,7 @@ export const routes = [
     {path: '/ipv6-xor', component: Ipv6Xor, name: 'Ipv6Xor'},
     {path: '/rust-parser', component: RustParser, name: 'RustParser'},
     {path: '/leg-cpu', component: LegCpu, name: 'LegCpu'},
+    {path: '/kaprekar', component: Kaprekar, name: 'Kaprekar'},
 ]
 
 export const router = createRouter({

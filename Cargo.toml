@@ -31,6 +31,9 @@ syn = { version = "2.0.79", features = ["extra-traits"] }
 quote = "1.0.37"
 leg-cpu-emulator = { git = "https://github.com/bczhc/leg-cpu-emulator" }
 pretty-hex = "0.4.1"
+rayon = "1.10.0"
+num-bigint = "0.4.6"
+js-sys = "0.3.72"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
