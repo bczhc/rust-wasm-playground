@@ -2,6 +2,10 @@
 import {computed, ref} from "vue";
 import {to_hex_padded, useWasm} from "../lib.ts";
 import {LegEmulationResult} from "wasm-lib";
+import exampleHelloWorld from '../assets/leg-cpu-examples/hello-world/code?raw';
+import exampleWaterWorld from '../assets/leg-cpu-examples/water-world/code?raw';
+import exampleWaterWorldInput from '../assets/leg-cpu-examples/water-world/input?raw';
+import exampleFunctionStack from '../assets/leg-cpu-examples/function-stack/code?raw';
 
 let wasm = useWasm();
 
@@ -37,6 +41,30 @@ let output_binary_hex = computed(() => {
   // Uint8Array's map differs from the Array one. It returns Uint8Array still instead of an array of new type. 😡
   return Array.from(r.output).map(x => to_hex_padded(x, 2)).join(' ');
 });
+
+type ExampleKeys = 'hello-world' | 'water-world' | 'function-stack';
+
+let examplesOptions: ({ key: ExampleKeys, label: string })[] = [
+  {key: 'hello-world', label: 'Hello World'},
+  {key: 'water-world', label: 'Water World'},
+  {key: 'function-stack', label: 'Function Stack'},
+]
+
+function onExamplesSelected(key: ExampleKeys) {
+  switch (key) {
+    case "hello-world":
+      code.value = (exampleHelloWorld as string).trim();
+      programInput.value = '';
+      break;
+    case "water-world":
+      code.value = (exampleWaterWorld as string).trim();
+      programInput.value = (exampleWaterWorldInput as string).trim();
+      break;
+    case 'function-stack':
+      code.value = (exampleFunctionStack as string).trim();
+      programInput.value = '';
+  }
+}
 </script>
 
 <template>
@@ -62,6 +90,9 @@ let output_binary_hex = computed(() => {
           <n-input v-model:value="maxCpuCycles"/>
         </n-form-item>
         <n-button type="primary" @click="runClick">Run</n-button>
+        <n-dropdown trigger="click" :options="examplesOptions" @select="onExamplesSelected">
+          <n-button type="primary" secondary style="margin: auto .5em">Examples</n-button>
+        </n-dropdown>
       </n-form>
     </div>
     <n-divider style="padding: 0; margin: 0"/>
