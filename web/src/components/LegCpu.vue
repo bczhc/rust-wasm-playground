@@ -18,7 +18,7 @@ let showRamModel = ref(false);
 let emulationResult = ref<LegEmulationResult | null>(null);
 
 function runClick() {
-  let cyclesLimit: BigInt | null = null;
+  let cyclesLimit: bigint | undefined;
   try {
     if (maxCpuCycles.value !== '') {
       cyclesLimit = BigInt(maxCpuCycles.value);
@@ -29,7 +29,7 @@ function runClick() {
     let target = wasm.LegCpu.assemble(code.value);
     assemblyHex.value = target.commented_binary;
     emulationResult.value = wasm.LegCpu.emulate(target.binary, programInput.value, cyclesLimit);
-  } catch (e) {
+  } catch (e: any) {
     assemblyHex.value = e.toString();
   }
 }
