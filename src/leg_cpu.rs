@@ -20,6 +20,8 @@ pub struct LegEmulationResult {
     pub output: Vec<u8>,
     pub output_lossy_string: String,
     pub cpu_cycles: u64,
+    pub ram: Vec<u8>,
+    pub ram_pretty_hex: String,
 }
 
 #[wasm_bindgen]
@@ -39,7 +41,7 @@ impl LegCpu {
         };
         result.map_err_string()
     }
-    
+
     pub fn emulate(binary: &[u8], input: &str, cycles_limit: Option<u64>) -> crate::Result<LegEmulationResult> {
         let cycles_limit = cycles_limit.unwrap_or(u64::MAX);
         let result: anyhow::Result<_> = try {
@@ -66,11 +68,14 @@ impl LegCpu {
                 }
             }
             let output_lossy_string = String::from_utf8_lossy(&output).to_string();
+            let ram_pretty_hex = pretty_hex::pretty_hex(&emulator.ram);
             LegEmulationResult {
                 output_lossy_string,
                 output,
                 cpu_cycles: cycle,
                 interrupted,
+                ram: emulator.ram,
+                ram_pretty_hex,
             }
         };
         result.map_err_string()

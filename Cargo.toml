@@ -30,6 +30,7 @@ blake3 = "1.5.4"
 syn = { version = "2.0.79", features = ["extra-traits"] }
 quote = "1.0.37"
 leg-cpu-emulator = { git = "https://github.com/bczhc/leg-cpu-emulator" }
+pretty-hex = "0.4.1"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

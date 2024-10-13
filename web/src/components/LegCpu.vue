@@ -13,6 +13,7 @@ let code = ref('');
 let assemblyHex = ref('');
 let programInput = ref('');
 let maxCpuCycles = ref('');
+let showRamModel = ref(false);
 
 let emulationResult = ref<LegEmulationResult | null>(null);
 
@@ -89,10 +90,13 @@ function onExamplesSelected(key: ExampleKeys) {
         <n-form-item label="Max CPU cycles">
           <n-input v-model:value="maxCpuCycles"/>
         </n-form-item>
-        <n-button type="primary" @click="runClick">Run</n-button>
-        <n-dropdown trigger="click" :options="examplesOptions" @select="onExamplesSelected">
-          <n-button type="primary" secondary style="margin: auto .5em">Examples</n-button>
-        </n-dropdown>
+        <div class="buttons-div">
+          <n-button type="primary" @click="runClick">Run</n-button>
+          <n-button type="info" @click="showRamModel = true">Show RAM</n-button>
+          <n-dropdown trigger="click" :options="examplesOptions" @select="onExamplesSelected">
+            <n-button type="primary" secondary>Examples</n-button>
+          </n-dropdown>
+        </div>
       </n-form>
     </div>
     <n-divider style="padding: 0; margin: 0"/>
@@ -105,6 +109,21 @@ function onExamplesSelected(key: ExampleKeys) {
       </div>
     </div>
   </div>
+
+  <n-modal v-model:show="showRamModel">
+    <n-card
+        style="width: 60em"
+        title="RAM Viewer"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+    >
+      <pre>
+      {{ emulationResult?.ram_pretty_hex }}
+    </pre>
+    </n-card>
+  </n-modal>
 </template>
 
 <style scoped>
@@ -128,5 +147,9 @@ function onExamplesSelected(key: ExampleKeys) {
 
 .middle-view {
   margin: 0.5em auto;
+}
+
+.buttons-div > * {
+  margin: auto .25em;
 }
 </style>
