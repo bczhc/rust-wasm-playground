@@ -16,6 +16,7 @@ mod blake3;
 mod hex;
 mod utf8;
 mod rust_parser;
+mod leg_cpu;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
