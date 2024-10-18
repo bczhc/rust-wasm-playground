@@ -1,5 +1,5 @@
 use crate::errors::{AnyhowExt, ResultExt};
-use crate::hashes::{ripemd160, sha160, sha256, sha256d, DigestType};
+use crate::hashes::{ripemd160, hash160, sha256, sha256d, DigestType};
 use bitcoin::ScriptBuf;
 use std::str::FromStr;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -35,7 +35,7 @@ impl Bitcoin {
                 DigestType::Ripemd160 => hex::encode(ripemd160(data)),
                 DigestType::Sha256 => hex::encode(sha256(data)),
                 DigestType::Sha256d => hex::encode(sha256d(data)),
-                DigestType::Sha160 => hex::encode(sha160(data)),
+                DigestType::Hash160 => hex::encode(hash160(data)),
             }
         };
         result.map_err_string()

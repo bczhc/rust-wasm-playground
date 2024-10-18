@@ -13,10 +13,10 @@ pub fn sha256d(data: &[u8]) -> [u8; 256 / 8] {
     sha256(&sha256(data))
 }
 
-/// The "SHA160" hash function in Bitcoin
+/// The HASH160 algorithm in Bitcoin.
 ///
-/// SHA160 = RIPEMD160(SHA256(x))
-pub fn sha160(data: &[u8]) -> [u8; 160 / 8] {
+/// HASH160 = RIPEMD160(SHA256(x))
+pub fn hash160(data: &[u8]) -> [u8; 160 / 8] {
     ripemd160(&sha256(data))
 }
 
@@ -26,5 +26,5 @@ pub enum DigestType {
     Ripemd160,
     Sha256,
     Sha256d,
-    Sha160,
+    Hash160,
 }

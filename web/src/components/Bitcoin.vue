@@ -8,7 +8,7 @@ let scriptHexInput = ref('');
 let scriptAsmOutput = computed(() => {
   return stringifyFallible(() => wasm.Bitcoin.parse_script_hex(scriptHexInput.value))
 });
-let digestType = ref('sha160');
+let digestType = ref('hash160');
 let base58CheckInput = ref('');
 let base58CheckOutput = computed(() => {
   return stringifyFallible(() => wasm.Bitcoin.base58_check(base58CheckInput.value));
@@ -23,7 +23,7 @@ let digestTypeOptions = [
   {label: 'RIPEMD160', value: 'ripemd160',},
   {label: 'SHA256', value: 'sha256'},
   {label: 'SHA256d', value: 'sha256d'},
-  {label: 'SHA160', value: 'sha160'},
+  {label: 'HASH160', value: 'hash160'},
 ]
 </script>
 
