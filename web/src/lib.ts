@@ -11,3 +11,11 @@ export function to_hex_padded(byte: number, padded_length: number) {
     }
     return s;
 }
+
+export function stringifyFallible(f: () => any) {
+    try {
+        return f().toString();
+    } catch (e: any) {
+        return e.toString();
+    }
+}

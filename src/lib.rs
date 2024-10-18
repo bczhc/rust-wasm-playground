@@ -19,6 +19,7 @@ mod utf8;
 mod rust_parser;
 mod leg_cpu;
 mod kaprekar;
+mod bitcoin;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.

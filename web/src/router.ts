@@ -6,6 +6,7 @@ import Ipv6Xor from "./components/Ipv6Xor.vue";
 import RustParser from "./components/RustParser.vue";
 import LegCpu from "./components/LegCpu.vue";
 import Kaprekar from "./components/Kaprekar.vue";
+import Bitcoin from "./components/Bitcoin.vue";
 
 export const routes = [
     {path: '/', component: Home, name: 'Home'},
@@ -15,6 +16,7 @@ export const routes = [
     {path: '/rust-parser', component: RustParser, name: 'RustParser'},
     {path: '/leg-cpu', component: LegCpu, name: 'LegCpu'},
     {path: '/kaprekar', component: Kaprekar, name: 'Kaprekar'},
+    {path: '/bitcoin', component: Bitcoin, name: 'Bitcoin'},
 ]
 
 export const router = createRouter({
