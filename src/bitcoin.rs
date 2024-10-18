@@ -1,7 +1,7 @@
-use crate::errors::AnyhowExt;
+use crate::errors::{AnyhowExt, ResultExt};
+use crate::hashes::{ripemd160, sha160, sha256, sha256d, DigestType};
 use bitcoin::ScriptBuf;
-use digest::Update;
-use ripemd::Ripemd160;
+use std::str::FromStr;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -18,19 +18,25 @@ impl Bitcoin {
         result.map_err_string()
     }
 
-    pub fn ripemd160(hex: &str) -> crate::Result<String> {
-        let result: anyhow::Result<_> = try {
-            let mut hasher = Ripemd160::default();
-            hasher.update(&hex::decode(hex)?);
-            let output = digest::FixedOutput::finalize_fixed(hasher);
-            hex::encode(output.as_slice())
-        };
+    pub fn base58_check(hex: &str) -> crate::Result<String> {
+        let result: anyhow::Result<_> = try { bitcoin::base58::encode_check(&hex::decode(hex)?) };
         result.map_err_string()
     }
 
-    pub fn base58_check(hex: &str) -> crate::Result<String> {
+    pub fn parse_hex_str(hex: &str) -> crate::Result<Vec<u8>> {
+        let result = hex::decode(hex);
+        result.map_err_string()
+    }
+
+    pub fn digest(data: &[u8], name: &str) -> crate::Result<String> {
         let result: anyhow::Result<_> = try {
-            bitcoin::base58::encode_check(&hex::decode(hex)?)
+            let r#type = DigestType::from_str(name)?;
+            match r#type {
+                DigestType::Ripemd160 => hex::encode(ripemd160(data)),
+                DigestType::Sha256 => hex::encode(sha256(data)),
+                DigestType::Sha256d => hex::encode(sha256d(data)),
+                DigestType::Sha160 => hex::encode(sha160(data)),
+            }
         };
         result.map_err_string()
     }

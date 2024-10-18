@@ -8,14 +8,23 @@ let scriptHexInput = ref('');
 let scriptAsmOutput = computed(() => {
   return stringifyFallible(() => wasm.Bitcoin.parse_script_hex(scriptHexInput.value))
 });
-let ripemd160Input = ref('');
-let ripemd160Output = computed(() => {
-  return stringifyFallible(() => wasm.Bitcoin.ripemd160(ripemd160Input.value))
-});
+let digestType = ref('sha160');
 let base58CheckInput = ref('');
 let base58CheckOutput = computed(() => {
   return stringifyFallible(() => wasm.Bitcoin.base58_check(base58CheckInput.value));
-})
+});
+let digestInput = ref('');
+let digestOutput = computed(() => stringifyFallible(() => {
+  let data = wasm.Bitcoin.parse_hex_str(digestInput.value);
+  return wasm.Bitcoin.digest(data, digestType.value);
+}))
+
+let digestTypeOptions = [
+  {label: 'RIPEMD160', value: 'ripemd160',},
+  {label: 'SHA256', value: 'sha256'},
+  {label: 'SHA256d', value: 'sha256d'},
+  {label: 'SHA160', value: 'sha160'},
+]
 </script>
 
 <template>
@@ -27,14 +36,17 @@ let base58CheckOutput = computed(() => {
     <n-divider/>
 
     hex
-    <n-input v-model:value="ripemd160Input"/>
-    ripemd160:
-    <div class="auto-wrap">{{ ripemd160Output }}</div>
+    <n-input v-model:value="digestInput"/>
+    <n-select :options="digestTypeOptions" placeholder="Digest Algorithm" v-model:value="digestType"/>
+    digest:
+    <div class="auto-wrap">{{ digestOutput }}</div>
+    <n-divider/>
 
     hex
     <n-input v-model:value="base58CheckInput"/>
     base58Check:
     <div class="auto-wrap">{{ base58CheckOutput }}</div>
+    <n-divider/>
   </div>
 </template>
 

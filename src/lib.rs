@@ -20,6 +20,7 @@ mod rust_parser;
 mod leg_cpu;
 mod kaprekar;
 mod bitcoin;
+mod hashes;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
