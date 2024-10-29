@@ -7,6 +7,7 @@ import RustParser from "./components/RustParser.vue";
 import LegCpu from "./components/LegCpu.vue";
 import Kaprekar from "./components/Kaprekar.vue";
 import Bitcoin from "./components/Bitcoin.vue";
+import TxBuilder from "./components/bitcoin/TxBuilder.vue";
 
 export const routes = [
     {path: '/', component: Home, name: 'Home'},
@@ -17,6 +18,7 @@ export const routes = [
     {path: '/leg-cpu', component: LegCpu, name: 'LegCpu'},
     {path: '/kaprekar', component: Kaprekar, name: 'Kaprekar'},
     {path: '/bitcoin', component: Bitcoin, name: 'Bitcoin'},
+    {path: '/tx-builder', component: TxBuilder, name: 'TxBuilder'},
 ]
 
 export const router = createRouter({

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.37",
+    "vue": "^3.5.12",
     "vue-router": "^4.4.3",
     "wasm-lib": "file:../pkg"
   },
@@ -17,7 +17,7 @@
     "@vitejs/plugin-vue": "^5.1.2",
     "naive-ui": "^2.39.0",
     "typescript": "^5.5.3",
-    "vite": "^5.4.1",
+    "vite": "5.4.6",
     "vite-plugin-wasm": "^3.3.0",
     "vue-tsc": "^2.0.29"
   }
