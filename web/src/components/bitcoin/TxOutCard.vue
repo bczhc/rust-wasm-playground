@@ -2,10 +2,10 @@
 import Frame from "./Frame.vue";
 import {safeParseInt, useWasm} from "../../lib.ts";
 import {ref} from "vue";
-import ScriptPubKeyHelper from "./ScriptPubKeyHelper.vue";
 import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
 import SelectableIcon from "./SelectableIcon.vue";
 import ScriptAsmModal from "./ScriptAsmModal.vue";
+import ScriptPubKeyFromAddressModal from "./ScriptPubKeyFromAddressModal.vue";
 
 let valueModel = defineModel('value');
 let emit = defineEmits(['close']);
@@ -15,26 +15,18 @@ let showModal = ref({
   scriptPubKeyHelper: false,
   scriptPubKeyInfo: false,
 });
+
+let props = defineProps<{
+  index: number,
+}>();
 </script>
 
 <template>
-  <n-modal v-model:show="showModal.scriptPubKeyHelper"
-  >
-    <n-card
-        style="width: 600px"
-        title="From Address"
-        :bordered="false"
-        size="huge"
-        role="dialog"
-        aria-modal="true"
-    >
-      <ScriptPubKeyHelper @done="showModal.scriptPubKeyHelper = false"
-                          @result="x => valueModel.scriptPubKey = x"/>
-    </n-card>
-  </n-modal>
+  <ScriptPubKeyFromAddressModal v-model:show="showModal.scriptPubKeyHelper"
+                                @result="x => valueModel.scriptPubKey = x"/>
   <ScriptAsmModal :script-hex="valueModel.scriptPubKey" v-model:show="showModal.scriptPubKeyInfo"/>
 
-  <Frame title="TxOut" title-adjust="left" title-size="normal" show-close-icon @close="emit('close')">
+  <Frame :title="`TxOut #${index}`" title-adjust="left" title-size="normal" show-close-icon @close="emit('close')">
     <div>
       <span class="label">Amount:</span>
       <n-input size="small" style="min-width: 50%; margin: 0 .25em"

@@ -6,11 +6,11 @@ import {
   CHECK_DIGITS,
   defaultTxIn,
   defaultTxOut,
-  GLOBAL_NETWORK,
   NetworkType,
   Transaction,
   TxIn,
-  TxOut, updateNetwork
+  TxOut,
+  updateNetwork
 } from "../../bitcoin.ts";
 import {ArrowForward as Arrow} from '@vicons/ionicons5';
 import TxOutCard from "./TxOutCard.vue";
@@ -77,8 +77,9 @@ let transactionHex = computed(() => {
       <div id="txs-div">
         <div>
           <TxInCard v-for="(_, index) in txIns" v-model:value="txIns[index]"
-                    @close="txIns.splice(index, 1)"/>
-          <n-button type="primary" @click="txIns.push(defaultTxIn())">Add
+                    @close="txIns.splice(index, 1)" :index="index"
+          />
+          <n-button type="primary" @click="txIns.push(defaultTxIn())" secondary>Add
           </n-button>
         </div>
         <div>
@@ -86,9 +87,9 @@ let transactionHex = computed(() => {
         </div>
         <div>
           <TxOutCard v-for="(_, index) in txOuts" v-model:value="txOuts[index]"
-                     @close="txOuts.splice(index, 1)"
+                     @close="txOuts.splice(index, 1)" :index="index"
           />
-          <n-button type="primary" @click="txOuts.push(defaultTxOut())">Add</n-button>
+          <n-button type="primary" @click="txOuts.push(defaultTxOut())" secondary>Add</n-button>
         </div>
       </div>
     </Frame>
@@ -125,5 +126,10 @@ let transactionHex = computed(() => {
 
 #tx-output {
   margin: 0;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
 }
 </style>

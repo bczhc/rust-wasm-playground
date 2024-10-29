@@ -24,7 +24,7 @@ export function defaultTxIn(): TxIn {
         outpointTxId: '',
         outpointIndex: 0,
         scriptSig: '',
-        sequence: 0xfffffffd,
+        sequence: 0xffffffff,
     };
 }
 

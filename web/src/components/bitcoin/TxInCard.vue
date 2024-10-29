@@ -6,22 +6,37 @@ import SelectableIcon from "./SelectableIcon.vue";
 import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
 import {ref} from "vue";
 import ScriptAsmModal from "./ScriptAsmModal.vue";
+import SigningModal from "./SigningModal.vue";
 
 let valueModel = defineModel<TxIn>('value');
 let emit = defineEmits(['close']);
+let props = defineProps<{
+  index: number,
+}>();
 
 let showModal = ref({
   scriptSigInfo: false,
   sequence: false,
+  signing: false,
 });
 
 function enterSequence(value: number) {
   showModal.value.sequence = false;
   valueModel.value.sequence = value;
 }
+
+function signClick() {
+  showModal.value.signing = true;
+}
 </script>
 
 <template>
+  <SigningModal
+      :tx="valueModel"
+      v-model:show="showModal.signing"
+      :index="props.index"
+      @result="x => valueModel.scriptSig = x"
+  />
   <n-modal v-model:show="showModal.sequence"
   >
     <n-card
@@ -46,7 +61,7 @@ function enterSequence(value: number) {
 
   <ScriptAsmModal :script-hex="valueModel.scriptSig" v-model:show="showModal.scriptSigInfo"/>
 
-  <Frame title="TxIn" title-adjust="left" title-size="normal" show-close-icon @close="emit('close')">
+  <Frame :title="`TxIn #${props.index}`" title-adjust="left" title-size="normal" show-close-icon @close="emit('close')">
     <div class="cell">
       <span class="label">Outpoint</span>
       <div id="outpoint-line">
@@ -78,6 +93,7 @@ function enterSequence(value: number) {
         >
           <InfoIcon/>
         </SelectableIcon>
+        <n-button text tag="a" type="primary" @click="signClick">Sign</n-button>
       </div>
       <n-input size="small" type="textarea" placeholder=""
                v-model:value="valueModel.scriptSig"/>

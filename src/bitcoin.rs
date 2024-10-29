@@ -1,15 +1,17 @@
 use crate::errors::{AnyhowExt, ResultExt};
 use crate::hashes::{hash160, ripemd160, sha1, sha256, sha256d, DigestType};
-use bitcoin::script::ScriptBufExt;
+use bitcoin::hashes::Hash;
+use bitcoin::key::Secp256k1;
+use bitcoin::script::{PushBytes, ScriptBufExt};
 use bitcoin::script::ScriptExt;
+use bitcoin::secp256k1::{Message, SecretKey};
+use bitcoin::sighash::SighashCache;
 use bitcoin::transaction::Version;
-use bitcoin::{
-    absolute, consensus, Address, Amount, Network, OutPoint, Script, ScriptBuf, Sequence,
-    Transaction, TxIn, TxOut, Witness,
-};
+use bitcoin::{absolute, consensus, Address, Amount, Network, OutPoint, PrivateKey, PublicKey, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Witness};
 use serde::{Deserialize, Serialize};
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
 use std::str::FromStr;
+use bitcoin::address::script_pubkey::BuilderExt;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -79,8 +81,10 @@ struct JsTxOut {
 #[wasm_bindgen]
 pub struct TxBuilder;
 
-trait TransactionExt {
-    fn from_js_tx(tx: &JsTx) -> anyhow::Result<Transaction> {
+impl TryFrom<JsTx> for Transaction {
+    type Error = anyhow::Error;
+
+    fn try_from(tx: JsTx) -> Result<Self, Self::Error> {
         let tx = Transaction {
             version: Version(tx.version as i32),
             lock_time: absolute::LockTime::from_consensus(tx.lock_time),
@@ -114,7 +118,60 @@ trait TransactionExt {
     }
 }
 
-impl TransactionExt for Transaction {}
+impl TryFrom<TxIn> for JsTxIn {
+    type Error = anyhow::Error;
+
+    fn try_from(tx: TxIn) -> Result<Self, Self::Error> {
+        Ok(JsTxIn {
+            outpoint_tx_id: tx.previous_output.txid.to_string(),
+            outpoint_index: tx.previous_output.vout,
+            sequence: tx.sequence.0,
+            script_sig: tx.script_sig.hex(),
+        })
+    }
+}
+
+impl TryFrom<TxOut> for JsTxOut {
+    type Error = anyhow::Error;
+
+    fn try_from(tx: TxOut) -> Result<Self, Self::Error> {
+        Ok(JsTxOut {
+            amount: tx.value.to_sat(),
+            script_pub_key: tx.script_pubkey.hex(),
+        })
+    }
+}
+
+impl TryFrom<Transaction> for JsTx {
+    type Error = anyhow::Error;
+
+    fn try_from(tx: Transaction) -> Result<Self, Self::Error> {
+        let tx = JsTx {
+            version: tx.version.0 as u8,
+            lock_time: tx.lock_time.to_consensus_u32(),
+            r#in: tx
+                .input
+                .into_iter()
+                .map(|x| JsTxIn::try_from(x))
+                .collect::<Result<_, _>>()?,
+            out: tx
+                .output
+                .into_iter()
+                .map(JsTxOut::try_from)
+                .collect::<Result<_, _>>()?,
+        };
+        Ok(tx)
+    }
+}
+
+impl FromStr for JsTx {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let tx: JsTx = serde_json::from_str(s)?;
+        Ok(tx)
+    }
+}
 
 trait EncodeHex {
     fn hex(&self) -> String;
@@ -134,7 +191,7 @@ impl TxBuilder {
     pub fn json_to_tx_hex(json: &str) -> crate::Result<String> {
         let r: anyhow::Result<_> = try {
             let tx: JsTx = serde_json::from_str(json)?;
-            let tx = Transaction::from_js_tx(&tx)?;
+            let tx = Transaction::try_from(tx)?;
             consensus::encode::serialize(&tx).hex()
         };
         r.map_err_string()
@@ -155,6 +212,75 @@ impl TxBuilder {
     pub fn script_to_asm(hex: &str) -> crate::Result<String> {
         let r: anyhow::Result<_> = try { Script::from_bytes(&hex::decode(hex)?).to_asm_string() };
         r.map_err_string()
+    }
+
+    pub fn sign_for_script_sig(
+        tx: &str,
+        input_index: usize,
+        txo_script_pubkey: &str,
+        sighash_type: u32,
+        secret_key: &str,
+        public_key: &str,
+    ) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try {
+            let tx: JsTx = tx.parse()?;
+            let tx: Transaction = tx.try_into()?;
+            let txo_script_pubkey = ScriptBuf::from_bytes(hex::decode(txo_script_pubkey)?);
+            let secret = SecretKey::from_slice(&hex::decode(secret_key)?)?;
+            let public = PublicKey::from_slice(&hex::decode(public_key)?)?;
+
+            let sighash_cache = SighashCache::new(tx);
+            let sighash = sighash_cache.legacy_signature_hash(
+                input_index,
+                &txo_script_pubkey,
+                sighash_type,
+            )?;
+
+            let secp = Secp256k1::default();
+            let message = Message::from_digest(sighash.to_byte_array());
+            let signature = secp.sign_ecdsa(&message, &secret);
+
+            let script_sig = ScriptBuf::builder()
+                .push_slice_try_from(signature.serialize_der().as_ref())?
+                .push_key(public)
+                .into_script();
+            script_sig.hex()
+        };
+        r.map_err_string()
+    }
+
+    pub fn wif_to_ec_hex(wif: &str) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try {
+            let private_key = PrivateKey::from_wif(wif)?;
+            private_key.inner.as_ref().hex()
+        };
+        r.map_err_string()
+    }
+
+    pub fn wif_to_public_key(wif: &str) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try {
+            let k = PrivateKey::from_wif(wif)?;
+            let public_key = k.public_key(&Default::default());
+            if public_key.compressed {
+                public_key.inner.serialize().hex()
+            } else {
+                public_key.inner.serialize_uncompressed().hex()
+            }
+        };
+        r.map_err_string()
+    }
+}
+
+pub trait ScriptsBuilderExt
+where
+    Self: Sized,
+{
+    fn push_slice_try_from(self, slice: &[u8]) -> anyhow::Result<Self>;
+}
+
+impl ScriptsBuilderExt for bitcoin::script::Builder {
+    fn push_slice_try_from(self, slice: &[u8]) -> anyhow::Result<Self> {
+        Ok(self.push_slice(<&PushBytes>::try_from(slice)?))
     }
 }
 
