@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {computed} from "vue";
+import {CloseOutline as CloseIcon} from '@vicons/ionicons5';
 
 const props = defineProps<{
   title: string,
   titleAdjust: 'left' | 'center',
   titleSize: string,
+  showCloseIcon?: boolean,
 }>();
 
 let titleCentered = computed(() => {
@@ -16,6 +18,9 @@ let titleCentered = computed(() => {
   <div id="root-Frame">
     <div class="title-wrapper" :class="titleCentered ? 'center' : 'left'">
       <span class="title">{{ props.title }}</span>
+      <n-icon size="1.5em" id="close-icon" v-if="showCloseIcon">
+        <CloseIcon/>
+      </n-icon>
     </div>
     <slot/>
   </div>
@@ -43,6 +48,7 @@ Thank you, Vue.js.
 
 .title-wrapper {
   display: flex;
+  justify-content: space-between;
 }
 
 .title-wrapper.center {
@@ -52,5 +58,14 @@ Thank you, Vue.js.
 .title {
   font-size: v-bind(titleSize);
   font-weight: bold;
+}
+
+#close-icon:hover {
+  background-color: lightgray;
+  transition: ease-in-out .2s;
+}
+
+#close-icon {
+  transition: ease-in-out .2s;
 }
 </style>
