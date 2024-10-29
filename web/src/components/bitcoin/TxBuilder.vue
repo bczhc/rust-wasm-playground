@@ -1,33 +1,35 @@
 <script setup lang="ts">
 import Frame from "./Frame.vue";
 import TxInCard from "./TxInCard.vue";
-import TxOutCard from "./TxOutCard.vue";
 import {computed, Ref, ref} from "vue";
-import {CHECK_DIGITS, Transaction, TxIn, TxOut} from "../../bitcoin.ts";
+import {CHECK_DIGITS, defaultTxIn, defaultTxOut, Transaction, TxIn, TxOut} from "../../bitcoin.ts";
 import {ArrowForward as Arrow} from '@vicons/ionicons5';
+import TxOutCard from "./TxOutCard.vue";
+import {safeParseInt, useWasm} from "../../lib.ts";
+
+let wasm = useWasm();
 
 let version = ref(1);
 let lockTime = ref(0);
+
+let txIns: Ref<TxIn[]> = ref([]);
+let txOuts: Ref<TxOut[]> = ref([]);
 
 let transaction = computed<Transaction>(() => {
   return {
     version: version.value,
     lockTime: lockTime.value,
-    in: [], /* TODO */
-    out: [],
+    in: txIns.value,
+    out: txOuts.value,
+  };
+});
+
+let transactionHex = computed(() => {
+  try {
+    return wasm.TxBuilder.json_to_tx_hex(JSON.stringify(transaction.value));
+  } catch (e: any) {
+    return e.toString();
   }
-});
-
-let txIn1: Ref<TxIn> = ref({
-  outpointTxId: "hhh",
-  outpointIndex: 1,
-  scriptSig: "aabb",
-  sequence: 123,
-});
-
-let txOut1: Ref<TxOut> = ref({
-  amount: 213123,
-  scriptPubKey: "xx",
 });
 </script>
 
@@ -37,31 +39,39 @@ let txOut1: Ref<TxOut> = ref({
       <n-form label-placement="top" inline>
         <n-form-item label="Version" style="margin: 0; padding: 0">
           <n-input placeholder="" size="small" style="min-width: 10em" autosize
-                   :allow-input="CHECK_DIGITS" v-model:value="version"/>
+                   :allow-input="CHECK_DIGITS"
+                   :value="version"
+                   @update:value="x => version = safeParseInt(x)"/>
         </n-form-item>
         <n-form-item label="LockTime" style="margin: 0; padding: 0">
           <n-input placeholder="" size="small" style="min-width: 10em" autosize
-                   :allow-input="CHECK_DIGITS" v-model:value="lockTime"/>
+                   :allow-input="CHECK_DIGITS"
+                   :value="lockTime"
+                   @update:value="x => lockTime = safeParseInt(x)"/>
         </n-form-item>
       </n-form>
       <div id="txs-div">
         <div>
-          <TxInCard v-model:value="txIn1"/>
-          <n-button type="primary">Add</n-button>
+          <TxInCard v-for="(_, index) in txIns" v-model:value="txIns[index]"
+                    @close="txIns.splice(index, 1)"/>
+          <n-button type="primary" @click="txIns.push(defaultTxIn())">Add
+          </n-button>
         </div>
         <div>
-          <Arrow/>
+          <Arrow v-if="txIns.length !== 0 && txOuts.length !== 0"/>
         </div>
         <div>
-          <TxOutCard v-model:value="txOut1"/>
-          <n-button type="primary">Add</n-button>
+          <TxOutCard v-for="(_, index) in txOuts" v-model:value="txOuts[index]"
+                     @close="txOuts.splice(index, 1)"
+          />
+          <n-button type="primary" @click="txOuts.push(defaultTxOut())">Add</n-button>
         </div>
       </div>
     </Frame>
-    <div>Transaction:</div>
-    {{ JSON.stringify(transaction) }}
-    <br>
-    {{ JSON.stringify(txIn1) }}
+    <div style="margin-top: 1em">Transaction:</div>
+    <pre id="tx-output">{{ JSON.stringify(transaction, null, 2) }}</pre>
+    <span>Consensus Encoded</span>
+    <n-input type="textarea" rows="10" :value="transactionHex"/>
   </div>
 </template>
 
@@ -87,5 +97,9 @@ let txOut1: Ref<TxOut> = ref({
   > *:nth-child(1), > *:nth-child(3) {
     width: 100%;
   }
+}
+
+#tx-output {
+  margin: 0;
 }
 </style>

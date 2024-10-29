@@ -19,3 +19,11 @@ export function stringifyFallible(f: () => any) {
         return e.toString();
     }
 }
+
+export function safeParseInt(x: string) {
+    let result = parseInt(x);
+    if (isNaN(result)) {
+        return 0;
+    }
+    return result;
+}

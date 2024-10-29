@@ -12,13 +12,15 @@ const props = defineProps<{
 let titleCentered = computed(() => {
   return props.titleAdjust === 'center'
 });
+
+let emit = defineEmits(['close']);
 </script>
 
 <template>
   <div id="root-Frame">
     <div class="title-wrapper" :class="titleCentered ? 'center' : 'left'">
       <span class="title">{{ props.title }}</span>
-      <n-icon size="1.5em" id="close-icon" v-if="showCloseIcon">
+      <n-icon size="1.5em" id="close-icon" v-if="showCloseIcon" @click="emit('close')">
         <CloseIcon/>
       </n-icon>
     </div>

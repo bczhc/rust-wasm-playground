@@ -18,3 +18,19 @@ export interface TxOut {
 }
 
 export const CHECK_DIGITS = x => /^\d*$/.test(x);
+
+export function defaultTxIn(): TxIn {
+    return {
+        outpointTxId: '',
+        outpointIndex: 0,
+        scriptSig: '',
+        sequence: 0xfffffffd,
+    };
+}
+
+export function defaultTxOut(): TxOut {
+    return {
+        amount: 0,
+        scriptPubKey: '',
+    };
+}
