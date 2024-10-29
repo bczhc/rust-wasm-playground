@@ -20,7 +20,8 @@ let digestOutput = computed(() => stringifyFallible(() => {
 }))
 
 let digestTypeOptions = [
-  {label: 'RIPEMD160', value: 'ripemd160',},
+  {label: 'RIPEMD160', value: 'ripemd160'},
+  {label: 'SHA1', value: 'sha1'},
   {label: 'SHA256', value: 'sha256'},
   {label: 'SHA256d', value: 'sha256d'},
   {label: 'HASH160', value: 'hash160'},
