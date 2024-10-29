@@ -2,12 +2,50 @@
 import Frame from "./Frame.vue";
 import {TxIn} from "../../bitcoin.ts";
 import {safeParseInt} from "../../lib.ts";
+import SelectableIcon from "./SelectableIcon.vue";
+import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
+import {ref} from "vue";
+import ScriptAsmModal from "./ScriptAsmModal.vue";
 
 let valueModel = defineModel<TxIn>('value');
 let emit = defineEmits(['close']);
+
+let showModal = ref({
+  scriptSigInfo: false,
+  sequence: false,
+});
+
+function enterSequence(value: number) {
+  showModal.value.sequence = false;
+  valueModel.value.sequence = value;
+}
 </script>
 
 <template>
+  <n-modal v-model:show="showModal.sequence"
+  >
+    <n-card
+        style="width: 600px"
+        title="Preset Sequences"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+    >
+      <n-space justify="center">
+        <n-button-group vertical>
+          <n-button @click="enterSequence(0xFFFFFFFF)">MAX (0xFFFFFFFF)</n-button>
+          <n-button @click="enterSequence(0x00000000)">ZERO (0x00000000)</n-button>
+          <n-button @click="enterSequence(0xFFFFFFFE)">ENABLE_LOCKTIME_NO_RBF (0xFFFFFFFE)</n-button>
+          <n-button @click="enterSequence(0xFFFFFFFD)">ENABLE_RBF_NO_LOCKTIME (0xFFFFFFFD)</n-button>
+          <n-button @click="enterSequence(0xFFFFFFFD)">ENABLE_LOCKTIME_AND_RBF (0xFFFFFFFD)</n-button>
+        </n-button-group>
+      </n-space>
+    </n-card>
+  </n-modal>
+
+  <ScriptAsmModal :script-hex="valueModel.scriptSig" v-model:show="showModal.scriptSigInfo"/>
+
   <Frame title="TxIn" title-adjust="left" title-size="normal" show-close-icon @close="emit('close')">
     <div class="cell">
       <span class="label">Outpoint</span>
@@ -21,15 +59,26 @@ let emit = defineEmits(['close']);
       </div>
     </div>
     <div class="cell">
-      <span class="label">Sequence:</span>
-      <n-input size="small" style="min-width: 50%; margin: 0 .25em"
-               autosize placeholder=""
+      <div class="label">
+        Sequence
+        <SelectableIcon @click="showModal.sequence = true">
+          <CreateIcon/>
+        </SelectableIcon>
+      </div>
+      <n-input size="small"
+               placeholder=""
                :value="valueModel.sequence"
                @update:value="x => valueModel.sequence = safeParseInt(x)"
       />
     </div>
     <div class="cell">
-      <span class="label">ScriptSig</span>
+      <div class="label">
+        ScriptSig
+        <SelectableIcon @click="showModal.scriptSigInfo = true"
+        >
+          <InfoIcon/>
+        </SelectableIcon>
+      </div>
       <n-input size="small" type="textarea" placeholder=""
                v-model:value="valueModel.scriptSig"/>
     </div>
@@ -47,5 +96,11 @@ let emit = defineEmits(['close']);
 
 .cell {
   margin: .25em 0;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: .25em;
 }
 </style>
