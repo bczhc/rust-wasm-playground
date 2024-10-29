@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Frame from "./Frame.vue";
-import {TxIn} from "../../bitcoin.ts";
+import {Transaction, TxIn} from "../../bitcoin.ts";
 import {safeParseInt} from "../../lib.ts";
 import SelectableIcon from "./SelectableIcon.vue";
 import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
@@ -12,6 +12,7 @@ let valueModel = defineModel<TxIn>('value');
 let emit = defineEmits(['close']);
 let props = defineProps<{
   index: number,
+  tx: Transaction,
 }>();
 
 let showModal = ref({
@@ -32,7 +33,7 @@ function signClick() {
 
 <template>
   <SigningModal
-      :tx="valueModel"
+      :tx="props.tx"
       v-model:show="showModal.signing"
       :index="props.index"
       @result="x => valueModel.scriptSig = x"

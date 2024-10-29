@@ -152,7 +152,7 @@ impl TryFrom<Transaction> for JsTx {
             r#in: tx
                 .input
                 .into_iter()
-                .map(|x| JsTxIn::try_from(x))
+                .map(JsTxIn::try_from)
                 .collect::<Result<_, _>>()?,
             out: tx
                 .output
@@ -192,7 +192,7 @@ impl TxBuilder {
         let r: anyhow::Result<_> = try {
             let tx: JsTx = serde_json::from_str(json)?;
             let tx = Transaction::try_from(tx)?;
-            consensus::encode::serialize(&tx).hex()
+            tx.consensus_encode_hex()
         };
         r.map_err_string()
     }

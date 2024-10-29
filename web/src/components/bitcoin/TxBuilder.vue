@@ -78,6 +78,7 @@ let transactionHex = computed(() => {
         <div>
           <TxInCard v-for="(_, index) in txIns" v-model:value="txIns[index]"
                     @close="txIns.splice(index, 1)" :index="index"
+                    :tx="transaction"
           />
           <n-button type="primary" @click="txIns.push(defaultTxIn())" secondary>Add
           </n-button>

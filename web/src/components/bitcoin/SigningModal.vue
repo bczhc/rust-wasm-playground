@@ -51,12 +51,15 @@ function signClick() {
     let scriptSig = useWasm().TxBuilder.sign_for_script_sig(
         JSON.stringify(props.tx),
         props.index,
+        txoScriptPubKey.value,
         sigHashCode(sigHash.value),
-        secretKey.value
+        secretKey.value,
+        publicKey.value,
     );
     emit('result', scriptSig);
     model.value = false;
   } catch (e: any) {
+    console.log(e);
     message.error(e.toString());
   }
 }
