@@ -9,6 +9,16 @@ import {safeParseInt, useWasm} from "../../lib.ts";
 
 let wasm = useWasm();
 
+type NetworkType = 'bitcoin' | 'testnet' | 'testnet4' | 'sigtest' | 'regtest';
+let networkOptions: { label: string, value: NetworkType }[] = [
+  {value: 'bitcoin', label: 'Bitcoin'},
+  {value: 'testnet', label: 'Testnet3'},
+  {value: 'testnet4', label: 'Testnet4'},
+  {value: 'sigtest', label: 'Sigtest'},
+  {value: 'regtest', label: 'Regtest'},
+];
+let selectedNetwork = ref<NetworkType>('bitcoin');
+
 let version = ref(1);
 let lockTime = ref(0);
 
@@ -48,6 +58,11 @@ let transactionHex = computed(() => {
                    :allow-input="CHECK_DIGITS"
                    :value="lockTime"
                    @update:value="x => lockTime = safeParseInt(x)"/>
+        </n-form-item>
+        <n-form-item label="Network" style="margin: 0; padding: 0">
+          <n-select :options="networkOptions" v-model:value="selectedNetwork"
+                    size="small" style="min-width: 10em"
+          />
         </n-form-item>
       </n-form>
       <div id="txs-div">
