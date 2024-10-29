@@ -12,7 +12,7 @@ export function to_hex_padded(byte: number, padded_length: number) {
     return s;
 }
 
-export function stringifyFallible(f: () => any) {
+export function stringifyFallible(f: () => any): string {
     try {
         return f().toString();
     } catch (e: any) {

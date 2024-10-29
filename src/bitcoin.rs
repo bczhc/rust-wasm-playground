@@ -1,9 +1,11 @@
 use crate::errors::{AnyhowExt, ResultExt};
 use crate::hashes::{hash160, ripemd160, sha1, sha256, sha256d, DigestType};
+use bitcoin::script::ScriptBufExt;
+use bitcoin::script::ScriptExt;
 use bitcoin::transaction::Version;
 use bitcoin::{
-    absolute, consensus, Address, Amount, Network, OutPoint, ScriptBuf, Sequence, Transaction,
-    TxIn, TxOut, Witness,
+    absolute, consensus, Address, Amount, Network, OutPoint, Script, ScriptBuf, Sequence,
+    Transaction, TxIn, TxOut, Witness,
 };
 use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
@@ -147,6 +149,11 @@ impl TxBuilder {
                 .script_pubkey();
             script.hex()
         };
+        r.map_err_string()
+    }
+
+    pub fn script_to_asm(hex: &str) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try { Script::from_bytes(&hex::decode(hex)?).to_asm_string() };
         r.map_err_string()
     }
 }

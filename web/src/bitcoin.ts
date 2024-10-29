@@ -34,3 +34,11 @@ export function defaultTxOut(): TxOut {
         scriptPubKey: '',
     };
 }
+
+export type NetworkType = 'bitcoin' | 'testnet' | 'testnet4' | 'sigtest' | 'regtest';
+export let GLOBAL_NETWORK: NetworkType = 'bitcoin';
+
+export const updateNetwork = (x: NetworkType) => {
+    GLOBAL_NETWORK = x;
+    console.log(x);
+}

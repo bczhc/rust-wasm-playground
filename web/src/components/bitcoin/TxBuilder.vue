@@ -2,14 +2,22 @@
 import Frame from "./Frame.vue";
 import TxInCard from "./TxInCard.vue";
 import {computed, Ref, ref} from "vue";
-import {CHECK_DIGITS, defaultTxIn, defaultTxOut, Transaction, TxIn, TxOut} from "../../bitcoin.ts";
+import {
+  CHECK_DIGITS,
+  defaultTxIn,
+  defaultTxOut,
+  GLOBAL_NETWORK,
+  NetworkType,
+  Transaction,
+  TxIn,
+  TxOut, updateNetwork
+} from "../../bitcoin.ts";
 import {ArrowForward as Arrow} from '@vicons/ionicons5';
 import TxOutCard from "./TxOutCard.vue";
 import {safeParseInt, useWasm} from "../../lib.ts";
 
 let wasm = useWasm();
 
-type NetworkType = 'bitcoin' | 'testnet' | 'testnet4' | 'sigtest' | 'regtest';
 let networkOptions: { label: string, value: NetworkType }[] = [
   {value: 'bitcoin', label: 'Bitcoin'},
   {value: 'testnet', label: 'Testnet3'},
@@ -62,6 +70,7 @@ let transactionHex = computed(() => {
         <n-form-item label="Network" style="margin: 0; padding: 0">
           <n-select :options="networkOptions" v-model:value="selectedNetwork"
                     size="small" style="min-width: 10em"
+                    @update:value="x => updateNetwork(x)"
           />
         </n-form-item>
       </n-form>
