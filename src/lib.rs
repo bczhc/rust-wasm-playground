@@ -17,9 +17,7 @@ mod blake3;
 mod hex;
 mod utf8;
 mod rust_parser;
-mod leg_cpu;
 mod kaprekar;
-mod bitcoin;
 mod hashes;
 mod log;
 
