@@ -1,10 +1,9 @@
 use crate::errors::{AnyhowExt, ResultExt};
 use crate::hashes::{hash160, ripemd160, sha1, sha256, sha256d, DigestType};
-use bitcoin::address::script_pubkey::BuilderExt;
+use bitcoin::address::script_pubkey::{BuilderExt, ScriptExt as ScriptExt2};
 use bitcoin::hashes::Hash;
 use bitcoin::key::Secp256k1;
-use bitcoin::script::ScriptExt;
-use bitcoin::script::{PushBytes, ScriptBufExt};
+use bitcoin::script::{PushBytes, ScriptBufExt, ScriptExt};
 use bitcoin::secp256k1::{Message, SecretKey};
 use bitcoin::sighash::SighashCache;
 use bitcoin::transaction::Version;
@@ -272,6 +271,16 @@ impl TxBuilder {
             } else {
                 public_key.inner.serialize_uncompressed().hex()
             }
+        };
+        r.map_err_string()
+    }
+
+    pub fn generate_p2sh_pub_key(redeem_hex: &str) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try {
+            let bytes = hex::decode(redeem_hex)?;
+            let script = Script::from_bytes(&bytes);
+            let p2sh = ScriptExt2::to_p2sh(script)?;
+            p2sh.hex()
         };
         r.map_err_string()
     }

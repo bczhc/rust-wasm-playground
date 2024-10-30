@@ -7,7 +7,7 @@ import SecretKeyFromWifModal from "./SecretKeyFromWifModal.vue";
 import {useWasm} from "../../lib.ts";
 import {useMessage} from 'naive-ui';
 import ScriptAsmModal from "./ScriptAsmModal.vue";
-import ScriptPubKeyFromAddressModal from "./ScriptPubKeyFromAddressModal.vue";
+import TxoScriptPubKeyInputModal from "./TxoScriptPubKeyInputModal.vue";
 
 let message = useMessage();
 
@@ -72,7 +72,7 @@ function signClick() {
       @puk-result="x => publicKey = x"
   />
   <ScriptAsmModal :script-hex="txoScriptPubKey" v-model:show="showModal.txoScriptPubKeyInfo"/>
-  <ScriptPubKeyFromAddressModal v-model:show="showModal.txoScriptPubKeyFromAddress"
+  <TxoScriptPubKeyInputModal v-model:show="showModal.txoScriptPubKeyFromAddress"
                                 @result="x => txoScriptPubKey = x"/>
 
   <n-modal v-model:show="model"

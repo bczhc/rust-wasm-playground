@@ -5,7 +5,7 @@ import {ref} from "vue";
 import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
 import SelectableIcon from "./SelectableIcon.vue";
 import ScriptAsmModal from "./ScriptAsmModal.vue";
-import ScriptPubKeyFromAddressModal from "./ScriptPubKeyFromAddressModal.vue";
+import TxoScriptPubKeyInputModal from "./TxoScriptPubKeyInputModal.vue";
 
 let valueModel = defineModel('value');
 let emit = defineEmits(['close']);
@@ -22,7 +22,7 @@ let props = defineProps<{
 </script>
 
 <template>
-  <ScriptPubKeyFromAddressModal v-model:show="showModal.scriptPubKeyHelper"
+  <TxoScriptPubKeyInputModal v-model:show="showModal.scriptPubKeyHelper"
                                 @result="x => valueModel.scriptPubKey = x"/>
   <ScriptAsmModal :script-hex="valueModel.scriptPubKey" v-model:show="showModal.scriptPubKeyInfo"/>
 
