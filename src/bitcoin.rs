@@ -1,17 +1,20 @@
 use crate::errors::{AnyhowExt, ResultExt};
 use crate::hashes::{hash160, ripemd160, sha1, sha256, sha256d, DigestType};
+use bitcoin::address::script_pubkey::BuilderExt;
 use bitcoin::hashes::Hash;
 use bitcoin::key::Secp256k1;
-use bitcoin::script::{PushBytes, ScriptBufExt};
 use bitcoin::script::ScriptExt;
+use bitcoin::script::{PushBytes, ScriptBufExt};
 use bitcoin::secp256k1::{Message, SecretKey};
 use bitcoin::sighash::SighashCache;
 use bitcoin::transaction::Version;
-use bitcoin::{absolute, consensus, Address, Amount, Network, OutPoint, PrivateKey, PublicKey, Script, ScriptBuf, Sequence, Transaction, TxIn, TxOut, Witness};
+use bitcoin::{
+    absolute, consensus, Address, Amount, Network, OutPoint, PrivateKey, PublicKey, Script,
+    ScriptBuf, Sequence, Transaction, TxIn, TxOut, Witness,
+};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use std::str::FromStr;
-use bitcoin::address::script_pubkey::BuilderExt;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
@@ -240,8 +243,11 @@ impl TxBuilder {
             let message = Message::from_digest(sighash.to_byte_array());
             let signature = secp.sign_ecdsa(&message, &secret);
 
+            let mut der = signature.serialize_der().as_ref().to_vec();
+            der.push(sighash_type as u8);
+
             let script_sig = ScriptBuf::builder()
-                .push_slice_try_from(signature.serialize_der().as_ref())?
+                .push_slice_try_from(der.as_ref())?
                 .push_key(public)
                 .into_script();
             script_sig.hex()
