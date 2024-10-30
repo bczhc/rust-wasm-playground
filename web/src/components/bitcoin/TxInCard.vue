@@ -70,7 +70,7 @@ function signClick() {
         <n-input size="small"
                  placeholder="Idx"
                  :allow-input="x => /^\d*$/.test(x)" class="input2"
-                 :value="valueModel.outpointIndex"
+                 :value="`${valueModel.outpointIndex}`"
                  @update:value="x => valueModel.outpointIndex = safeParseInt(x)"/>
       </div>
     </div>
@@ -83,7 +83,7 @@ function signClick() {
       </div>
       <n-input size="small"
                placeholder=""
-               :value="valueModel.sequence"
+               :value="`${valueModel.sequence}`"
                @update:value="x => valueModel.sequence = safeParseInt(x)"
       />
     </div>

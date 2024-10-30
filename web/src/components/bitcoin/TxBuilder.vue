@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import Frame from "./Frame.vue";
 import TxInCard from "./TxInCard.vue";
-import {computed, Ref, ref} from "vue";
+import {computed, Ref, ref, watch} from "vue";
 import {
   CHECK_DIGITS,
   defaultTxIn,
   defaultTxOut,
+  GLOBAL_NETWORK,
   NetworkType,
   Transaction,
   TxIn,
@@ -15,8 +16,11 @@ import {
 import {ArrowForward as Arrow} from '@vicons/ionicons5';
 import TxOutCard from "./TxOutCard.vue";
 import {safeParseInt, useWasm} from "../../lib.ts";
+import {useRoute, useRouter} from "vue-router";
 
 let wasm = useWasm();
+let router = useRouter();
+let route = useRoute();
 
 let networkOptions: { label: string, value: NetworkType }[] = [
   {value: 'bitcoin', label: 'Bitcoin'},
@@ -49,6 +53,32 @@ let transactionHex = computed(() => {
     return e.toString();
   }
 });
+
+watch([transaction], () => {
+  console.log(transaction.value);
+  router.replace({
+    ...router.currentRoute.value,
+    query: {
+      tx: JSON.stringify(transaction.value),
+      network: GLOBAL_NETWORK,
+    }
+  });
+}, {deep: true});
+
+function updateTransaction(json: string) {
+  let tx = JSON.parse(json) as Transaction;
+  version.value = tx.version;
+  lockTime.value = tx.lockTime;
+  txIns.value = tx.in;
+  txOuts.value = tx.out;
+}
+
+let txQuery: string | undefined = route.query['tx'];
+let networkQuery: string | undefined = route.query['network'];
+if (txQuery) {
+  updateTransaction(txQuery);
+  updateNetwork(networkQuery as NetworkType);
+}
 </script>
 
 <template>
@@ -58,13 +88,13 @@ let transactionHex = computed(() => {
         <n-form-item label="Version" style="margin: 0; padding: 0">
           <n-input placeholder="" size="small" style="min-width: 10em" autosize
                    :allow-input="CHECK_DIGITS"
-                   :value="version"
+                   :value="`${version}`"
                    @update:value="x => version = safeParseInt(x)"/>
         </n-form-item>
         <n-form-item label="LockTime" style="margin: 0; padding: 0">
           <n-input placeholder="" size="small" style="min-width: 10em" autosize
                    :allow-input="CHECK_DIGITS"
-                   :value="lockTime"
+                   :value="`${lockTime}`"
                    @update:value="x => lockTime = safeParseInt(x)"/>
         </n-form-item>
         <n-form-item label="Network" style="margin: 0; padding: 0">

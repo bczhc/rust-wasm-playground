@@ -31,7 +31,7 @@ let props = defineProps<{
       <span class="label">Amount:</span>
       <n-input size="small" style="min-width: 50%; margin: 0 .25em"
                autosize placeholder=""
-               :value="valueModel.amount"
+               :value="`${valueModel.amount}`"
                @update:value="x => valueModel.amount = safeParseInt(x)"
       />
     </div>
