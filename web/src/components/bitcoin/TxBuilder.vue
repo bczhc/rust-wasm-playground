@@ -73,8 +73,8 @@ function updateTransaction(json: string) {
   txOuts.value = tx.out;
 }
 
-let txQuery: string | undefined = route.query['tx'];
-let networkQuery: string | undefined = route.query['network'];
+let txQuery = route.query['tx'] as string | undefined;
+let networkQuery = route.query['network'] as string | undefined;
 if (txQuery) {
   updateTransaction(txQuery);
   updateNetwork(networkQuery as NetworkType);
