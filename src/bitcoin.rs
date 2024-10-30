@@ -284,6 +284,15 @@ impl TxBuilder {
         };
         r.map_err_string()
     }
+
+    pub fn script_sig_for_p2sh(script_sig_hex: &str, redeem_hex: &str) -> crate::Result<String> {
+        let r: anyhow::Result<_> = try {
+            let mut buf = ScriptBuf::from_bytes(hex::decode(script_sig_hex)?);
+            buf.push_slice(<&PushBytes>::try_from(hex::decode(redeem_hex)?.as_slice())?);
+            buf.hex()
+        };
+        r.map_err_string()
+    }
 }
 
 pub trait ScriptsBuilderExt

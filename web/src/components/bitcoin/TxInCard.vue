@@ -6,7 +6,7 @@ import SelectableIcon from "./SelectableIcon.vue";
 import {CreateOutline as CreateIcon, InformationOutline as InfoIcon} from '@vicons/ionicons5';
 import {ref} from "vue";
 import ScriptAsmModal from "./ScriptAsmModal.vue";
-import SigningModal from "./SigningModal.vue";
+import TxiScriptSigInputModal from "./TxiScriptSigInputModal.vue";
 
 let valueModel = defineModel<TxIn>('value');
 let emit = defineEmits(['close']);
@@ -18,26 +18,22 @@ let props = defineProps<{
 let showModal = ref({
   scriptSigInfo: false,
   sequence: false,
-  signing: false,
+  inputScriptSig: false,
 });
 
 function enterSequence(value: number) {
   showModal.value.sequence = false;
   valueModel.value.sequence = value;
 }
-
-function signClick() {
-  showModal.value.signing = true;
-}
 </script>
 
 <template>
-  <SigningModal
-      :tx="props.tx"
-      v-model:show="showModal.signing"
-      :index="props.index"
+  <TxiScriptSigInputModal
+      :tx="props.tx" :index="props.index"
+      v-model:show="showModal.inputScriptSig"
       @result="x => valueModel.scriptSig = x"
   />
+
   <n-modal v-model:show="showModal.sequence"
   >
     <n-card
@@ -90,11 +86,13 @@ function signClick() {
     <div class="cell">
       <div class="label">
         ScriptSig
+        <SelectableIcon @click="showModal.inputScriptSig = true" style="margin-left: .25em">
+          <CreateIcon/>
+        </SelectableIcon>
         <SelectableIcon @click="showModal.scriptSigInfo = true"
         >
           <InfoIcon/>
         </SelectableIcon>
-        <n-button text tag="a" type="primary" @click="signClick">Sign</n-button>
       </div>
       <n-input size="small" type="textarea" placeholder=""
                v-model:value="valueModel.scriptSig"/>
