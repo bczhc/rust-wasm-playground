@@ -25,7 +25,7 @@ rand = "0.8.5"
 rexif = "0.7.4"
 anyhow = "1.0.86"
 hex = "0.4.3"
-hex-literal = "0.4.1"
+hex-literal = "1.0.0"
 blake3 = "1.5.4"
 syn = { version = "2.0.79", features = ["extra-traits"] }
 quote = "1.0.37"
